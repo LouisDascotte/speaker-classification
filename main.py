@@ -4,16 +4,19 @@ def normalise(signal):
     return signal/np.max(np.abs(signal))
 
 def split(signal, width, shiftingstep, samplefreq):
-    shifting = (shiftingstep/1000)*samplefreq # taille du shif en points
-    widthsize = (width/1000)*samplefreq # taille de la fenetre en points
-    step = np.size(signal)/shifting
-    frames = np.array([])
+    shift_n = int((shiftingstep/1000)*samplefreq) 
+    width_n = int((width/1000)*samplefreq) 
+    step = int(np.size(signal)/shift_n)
+    frames = []
     for i in range(step):
-        if((i*shifting)+widthsize > np.size(signal)):
-            diff = ((i*shifting)+widthsize) - np.size(signal)
-            frames.append(np.array(signal[i*shifting:(i*shifting)+widthsize-diff]))
+        if((i*shift_n)+width_n > np.size(signal)):
+            diff = ((i*shift_n)+width_n) - np.size(signal)
+            frame = signal[i*shift_n:(i*shift_n)+width_n-diff]
+            frames.append(frame)
         else:    
-            frames.append(np.array(signal[i*shifting:(i*shifting)+widthsize]))
+            frame = signal[i*shift_n:(i*shift_n)+width_n]
+            frames.append(frame)
+    frames = np.array(frames)        
     return frames
     
 
@@ -27,4 +30,4 @@ audio = np.array([1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76])
 
 # print(normalise(audio))
 
-print(get_signal_energy(audio))
+print(split(audio, 1000, 1000, 5))
