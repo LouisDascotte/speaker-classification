@@ -6,5 +6,5 @@ def filepicker(speaker_name):
     rands = random.sample(range(len(allPaths)-1), 5)
     files = []
     for i in rands:
-        files.append(allPaths[i])
+        files.append(allPaths[i].split("/")[2])
     return files
