@@ -1,8 +1,9 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 def normalise(signal):
     return signal/np.max(np.abs(signal))
-
+    
 def split(signal, width, shiftingstep, samplefreq):
     shift_n = int((shiftingstep/1000)*samplefreq) 
     width_n = int((width/1000)*samplefreq) 
@@ -18,10 +19,14 @@ def split(signal, width, shiftingstep, samplefreq):
             frames.append(frame)
     frames = np.array(frames)        
     return frames
-    
 
-def get_signal_energy(signal):
+def get_energy(signal):
     return np.sum(np.square(signal))
+
+def is_voiced(signal, threshold):
+    return get_energy(signal) > threshold
+
+
 
 
 
