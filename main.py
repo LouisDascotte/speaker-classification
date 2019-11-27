@@ -4,7 +4,7 @@ import math
 
 def normalise(signal):
     return signal/np.max(np.abs(signal))
-
+    
 def split(signal, width, shiftingstep, samplefreq):
     shift_n = int((shiftingstep/1000)*samplefreq) 
     width_n = int((width/1000)*samplefreq) 
@@ -48,11 +48,14 @@ def autocorrelation(signal, samplefreq, fmin=50):
 
 
 
-def get_signal_energy(signal):
+def get_energy(signal):
     return np.sum(np.square(signal))
 
-def is_voice(signal, treshhold):
-    return get_signal_energy(signal) > treshhold
+def is_voiced(signal, threshold):
+    return get_energy(signal) > threshold
+
+
+
 
 
 
