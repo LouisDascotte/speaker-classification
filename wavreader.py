@@ -1,21 +1,10 @@
 import random
 import glob
-def filepicker(pathName):
-    path =  pathName + "\*.wav"
-    allPaths = glob.glob(path)
 
-    for i in range(len(allPaths)):
-        aux = allPaths[i].split(pathName + "\\")
-        allPaths[i] = aux[1]
-
-    randomFiles = []
-    for i in range(5):
-        randomChoice = random.choice(allPaths)
-        while(randomChoice in randomFiles):
-            randomChoice = random.choice(allPaths)
-        randomFiles.append(randomChoice)
-        
-    print(randomFiles)
-
-r = r"C:\Users\luisk\Documents\cmu_us_bdl_arctic\wav"
-filepicker(r)
+def filepicker(speaker_name):
+    allPaths = glob.glob("cmu_us_"+speaker_name+"_arctic/wav/*.wav")
+    rands = random.sample(range(len(allPaths)-1), 5)
+    files = []
+    for i in rands:
+        files.append(allPaths[i])
+    return files
