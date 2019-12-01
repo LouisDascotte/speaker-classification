@@ -57,11 +57,43 @@ def file_picker(speaker_name):
         files.append(path[i])
     return files
 
+def find_treshhold(energies):
+    treshhold = None
+    for i in range(1, len(energies)-1):
+        if(energies[i-1] < energies[i] and energies[i]> energies[i+1]):
+            if(treshhold!=None):
+                if(energies[i]< treshhold):
+                    treshhold = energies[i]
+            else:
+                treshhold = energies[i]
+    return treshhold
+
+def analyze(filename):
+    datas = wf.read(filename)
+    signal = datas[1]
+    normalized_signal = normalise(signal)
+    frames = split(normalized_signal, 300, 150, datas[0])
+    energies = []
+    for frame in frames:
+        energies.append(get_energy(frame))
+    print(find_treshhold(energies))
+    fig, axs = plt.subplots(1, 2)
+    axs[0].plot(datas[1])
+    axs[0].set_title("signal")
+    axs[1].plot(energies)
+    axs[1].set_title("energy")
+    #plt.plot(datas[1])
+    #plt.plot(energies)
 
 
 
 
 
+
+
+
+files = file_picker("slt")
+analyze(files[0])
 # audio = np.array([1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76], dtype=np.float)
 # normalized_signal = normalise(audio)
 # tab = split(normalized_signal, 1000, 1000, 200)
