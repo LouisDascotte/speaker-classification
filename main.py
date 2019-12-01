@@ -1,6 +1,7 @@
 import numpy as np
+import scipy.io.wavfile as wf
 import matplotlib.pyplot as plt
-import math 
+import math, random, glob
 
 def normalise(signal):
     return signal/np.max(np.abs(signal))
@@ -43,26 +44,27 @@ def autocorrelation(signal, samplefreq, fmin=50):
     period = find_distance(x, c)
     return 1/period
 
-
-          
-
-
-
 def get_energy(signal):
     return np.sum(np.square(signal))
 
 def is_voiced(signal, threshold):
     return get_energy(signal) > threshold
 
+def file_picker(speaker_name):
+    path = glob.glob("cmu_us_"+speaker_name+"_arctic/wav/*.wav")
+    files = []
+    for i in random.sample(range(len(path)-1), 5):
+        files.append(path[i])
+    return files
 
 
 
 
 
 
-audio = np.array([1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76], dtype=np.float)
-normalized_signal = normalise(audio)
-tab = split(normalized_signal, 1000, 1000, 200)
-print(tab)
-f0 = autocorrelation(tab[0], 200)
-print(f0)
+# audio = np.array([1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76], dtype=np.float)
+# normalized_signal = normalise(audio)
+# tab = split(normalized_signal, 1000, 1000, 200)
+# print(tab)
+# f0 = autocorrelation(tab[0], 200)
+# print(f0)
