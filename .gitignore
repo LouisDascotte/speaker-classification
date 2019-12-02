@@ -1,3 +1,5 @@
 *.pdf
 cmu*
 __pycache__/scikit_talkbox_lpc.cpython-36.pyc
+__pycache__/filterbanks.cpython-36.pyc
+__pycache__/scikit_talkbox_lpc.cpython-37.pyc
