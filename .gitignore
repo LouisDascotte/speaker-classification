@@ -1,2 +1,3 @@
 *.pdf
 cmu*
+__pycache__/scikit_talkbox_lpc.cpython-36.pyc

@@ -1,7 +1,10 @@
 import numpy as np
 import scipy.io.wavfile as wf
+import scipy.signal as sp
 import matplotlib.pyplot as plt
 import math, random, glob
+import scikit_talkbox_lpc
+from scipy.signal import lfilter
 
 def normalise(signal):
     return signal/np.max(np.abs(signal))
@@ -85,6 +88,33 @@ def analyze(filename):
     #plt.plot(datas[1])
     #plt.plot(energies)
 
+def formants(signal, width, shiftingstep, samplefreq):
+    frames = split(signal, width, shiftingstep, samplefreq) 
+    b, a = [1, 0.67], [1, 0] #coefficients of the high pass filter
+    filtedframes = []
+    roots = [] #roots of each LPC
+    for signal in frames:
+        filteredframe = lfilter(b, a, signal) #put the frame inside the high pass filter
+        hamming_w = np.hamming(len(filteredframe)) #obtain the hamming window
+        filteredframe = hamming_w * filteredframe #put the filtered frame in the hamming window corresponding
+        LPC = scikit_talkbox_lpc.lpc_ref(filteredframe, 9) #get the lpc coefficients
+        root = np.roots(LPC) # obtain the roots with the lpc coeffcients 
+        # we take either the positives complexe or the negatives complexe (positive in this case)
+        for i in range(len(root)):
+            imag = np.imag(root[i])
+            if( imag > 0):
+                roots.append(root[i])
+    angles = np.arctan2(np.imag(roots), np.real(roots)) #angles obtained from the roots
+    freqs = sorted(angles*(samplefreq/(2*math.pi))) #frequences obtained from the angles
+    
+
+
+    
+    
+
+
+
+
 
 
 
@@ -93,7 +123,9 @@ def analyze(filename):
 
 
 files = file_picker("slt")
-analyze(files[0])
+datas = wf.read(files[0])
+#analyze(files[0])
+formants(datas[1], 1000, 1000, 1000)
 # audio = np.array([1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76], dtype=np.float)
 # normalized_signal = normalise(audio)
 # tab = split(normalized_signal, 1000, 1000, 200)
