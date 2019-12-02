@@ -106,6 +106,7 @@ def formants(signal, width, shiftingstep, samplefreq):
                 roots.append(root[i])
     angles = np.arctan2(np.imag(roots), np.real(roots)) #angles obtained from the roots
     freqs = sorted(angles*(samplefreq/(2*math.pi))) #frequences obtained from the angles
+    return freqs
     
 
 
