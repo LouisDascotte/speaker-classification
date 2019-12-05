@@ -36,18 +36,17 @@ def find_distance(x, c):
     firstpoint = None
     secondpoint = None
     for i in (range(1, len(c)-1)):
-        if(c[i] > c[i+1] and c[i] > c[i-1]):
+        if((c[i] > c[i+1] and c[i] > c[i-1]) or (c[i] < c[i+1] and c[i] < c[i-1])):
             if(firstpoint == None):
                 firstpoint = x[i]
             elif (secondpoint == None):
                 secondpoint = x[i]
                 break
-    if(secondpoint == None or firstpoint ==None):
+    if(secondpoint == None or firstpoint == None):
         return None
     else:
         distance = secondpoint - firstpoint
         return distance
-
 
 
 def autocorrelation(signal, samplefreq, fmin=50):
@@ -93,7 +92,6 @@ def find_treshhold(frames):
     return treshhold
 
 
-
 def formants(signal, width, shiftingstep, samplefreq):
     frames = split(signal, width, shiftingstep, samplefreq)
     b, a = [1, 0.67], [1, 0]  # coefficients of the high pass filter
@@ -127,7 +125,6 @@ def mfcc(signal,  width, shiftingstep, samplefreq, N_tfd=257):
     frames = split(pre_emphasized_signal, width, shiftingstep, samplefreq)
     filtedframes = []
     P_values = []
-    dcts = []
     for frame in frames:
         hamming_w = np.hamming(len(frame))
         filteredframe = hamming_w * frame
@@ -140,49 +137,35 @@ def mfcc(signal,  width, shiftingstep, samplefreq, N_tfd=257):
     return DCT[:13]
 
 
-def rule_based(width=1000, shiftingstep=1000, sf=1000, N_tfd=257):
+def rule_based(width=1000, shiftingstep=1000, sf=16000, sf2=1000, N_tfd=512):
     male = file_picker("bdl", 15)
     female = file_picker("slt", 15)
-    sentences = []
-    for element in female:
-        sentences.append(element)
-    for element in male:
-        sentences.append(element)
-    random.shuffle(sentences)
+    sentences = male+female
     for sentence in sentences:
         datas = wf.read(sentence)
         signal = datas[1]
-        frames = split(signal, width, shiftingstep, sf)
+        normalized_signal = normalise(signal)
+        frames = split(normalized_signal, width, shiftingstep, sf2)
         treshhold = find_treshhold(frames)
         pitches = []
         for frame in frames:
             if(is_voiced(frame, treshhold)):
-                pitch = autocorrelation(frame, sf)
+                pitch = autocorrelation(frame, sf2)
                 if(pitch != None):
-                    #print("pitch : " + str(pitch))
-                    pitches.append(autocorrelation(frame, sf))
-        #f1 = formants(signal, width, shiftingstep, sf)[0]
-        #print("f1 : "+ str(f1))
+                    pitches.append(pitch)
+        f1 = formants(signal, width, shiftingstep, sf)[0]
         pitch = np.mean(np.array(pitches))
-        print("pitch : " + str(pitch))
-        if(pitch>350 ):
-            print("the wav file : " + sentence+" is a female voice")
+
+        if (pitch <= 200):
+            print("[Pitch] "+sentence+" is a male voice.")
         else:
-            print("the wav file : " + sentence+" is a male voice")
+            print("[Pitch] "+sentence+" is a female voice.")
+
+        if (f1 <= 500):
+            print("[Formant] "+sentence+" is a male voice.")
+        else:
+            print("[Formant] "+sentence+" is a female voice.")
 
 
-
-
-rule_based()
-#files = file_picker("slt")
-#datas = wf.read(files[0])
-#test(datas[1])
-#freqz = formants(datas[1], 1000, 1000, 1000)
-#P_values = mfcc(datas[1], 1000, 1000, 1000)
-#print(P_values)
-# audio = np.array([1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76, 1,3,4,65,7,8,8,9,6,4,3,32,12,31,4,45,64,75,-100,-23,-76], dtype=np.float)
-# normalized_signal = normalise(audio)
-# tab = split(normalized_signal, 1000, 1000, 200)
-# print(tab)
-# f0 = autocorrelation(tab[0], 200)
-# print(f0)
+if __name__ == "__main__":
+    rule_based()
